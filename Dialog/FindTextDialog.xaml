@@ -1,0 +1,55 @@
+﻿<Window x:Class="ResxTranslator.Dialog.FindTextDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ResxTranslator.Dialog"
+        mc:Ignorable="d"
+        ResizeMode="NoResize"
+        Height="150" Width="500"
+        Title="検索"
+        Icon="..\ICON\ResxTranslator.ico" FontFamily="Meiryo UI" >
+    <Grid Background="WhiteSmoke">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25*"/>
+            <RowDefinition Height="25*"/>
+            <RowDefinition Height="25*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="35*" />
+            <ColumnDefinition Width="70*" />
+            <ColumnDefinition Width="25*" />
+        </Grid.ColumnDefinitions>
+
+        <Label Name="lblFindValue" Grid.Column="0" Grid.Row="0" Margin="10,3,5,5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Target="{Binding ElementName=txtFindValue}">
+            <AccessText TextWrapping="WrapWithOverflow">検索する文字列(_N):</AccessText>
+        </Label>
+        <TextBox Name="txtFindValue" Grid.Column="1" Grid.Row="0" Margin="5" Height="23" VerticalAlignment="Center" AutoWordSelection="True" >
+        </TextBox>
+        <Button Name="btnFindValue" Grid.Column="2" Grid.Row="0" Margin="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Command="Find" IsDefault="True" >
+            <AccessText TextWrapping="WrapWithOverflow">次を検索(_F)</AccessText>
+        </Button>
+
+        <GroupBox Name="gbFindVector" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Stretch" Margin="70, 12, 5, 5" VerticalAlignment="Stretch" Header="検索する方向" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5*" />
+                    <ColumnDefinition Width="5*" />
+                </Grid.ColumnDefinitions>
+
+                <RadioButton Name="rdoUp" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5" GroupName="FindVector" >
+                    <AccessText >上へ(_U)</AccessText>
+                </RadioButton>
+                <RadioButton Name="rdoDown" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5" GroupName="FindVector" IsChecked="True">
+                    <AccessText >下へ(_D)</AccessText>
+                </RadioButton>
+            </Grid>
+        </GroupBox>
+
+        <Button Name="btnCancel" Grid.Column="2" Grid.Row="1" Margin="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Command="Close" Content="キャンセル" IsCancel="True"/>
+
+        <CheckBox Name="chkCaseSensitive" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="15,5,5,5" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <AccessText >大文字と小文字を区別する(_C)</AccessText>
+        </CheckBox>
+    </Grid>
+</Window>

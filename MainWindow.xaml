@@ -1,0 +1,145 @@
+﻿<Window x:Class="ResxTranslator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Converter="clr-namespace:ResxTranslator.Converter"
+        xmlns:Commands="clr-namespace:ResxTranslator.Commands"
+        mc:Ignorable="d"
+        Closing="Window_Closing"
+        Title="Resx Translator"
+        Width="640" MinWidth="640"
+        Height="480" MinHeight="480"
+        Icon="ICON\ResxTranslator.ico" ResizeMode="CanResizeWithGrip" FontFamily="Meiryo UI">
+    <Window.Resources>
+        <ResourceDictionary Source="Style/ResxTranslatorStyles.xaml"/>
+    </Window.Resources>
+
+    <Window.CommandBindings>
+        <CommandBinding Command="Commands:ResxTranslaterCommands.Open" Executed="OpenSource_Click" />
+        <CommandBinding Command="Commands:ResxTranslaterCommands.New" Executed="OpenTarget_Click" CanExecute="TargetCommand_CanExecute"/>
+        <CommandBinding Command="Commands:ResxTranslaterCommands.Save" Executed="SaveTarget_Click"  CanExecute="TargetCommand_CanExecute"/>
+        <CommandBinding Command="Commands:ResxTranslaterCommands.CopyFromSource" Executed="CopyFromSource_Click"  CanExecute="TargetCommand_CanExecute"/>
+        <CommandBinding Command="Commands:ResxTranslaterCommands.AddToComment" Executed="AddToComment_Click"  CanExecute="TargetCommand_CanExecute"/>
+        <CommandBinding Command="Commands:ResxTranslaterCommands.FindSource" Executed="FindSourceValue_Click"  CanExecute="TargetCommand_CanExecute"/>
+        <CommandBinding Command="Commands:ResxTranslaterCommands.FindTarget" Executed="FindTargetValue_Click"  CanExecute="TargetCommand_CanExecute"/>
+    </Window.CommandBindings>
+
+    <Grid Background="WhiteSmoke">
+        <Grid.Resources>
+            <Converter:TranslatedValueConverter x:Key="translatedValueConverter" />
+            <Converter:NoWrapTextConverter x:Key="noWrapTextConverter" />
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" MinWidth="150"/>
+            <ColumnDefinition Width="7*" MinWidth="300"/>
+        </Grid.ColumnDefinitions>
+        <Menu Grid.ColumnSpan="2" Grid.Row="0" Name="menu" >
+            <MenuItem Header="ファイル(_F)">
+                <MenuItem Command="Commands:ResxTranslaterCommands.Open"/>
+                <MenuItem Command="Commands:ResxTranslaterCommands.New"/>
+                <MenuItem Command="Commands:ResxTranslaterCommands.Save"/>
+            </MenuItem>
+            <MenuItem Header="編集(_E)">
+                <MenuItem Command="Commands:ResxTranslaterCommands.CopyFromSource"/>
+                <MenuItem Command="Commands:ResxTranslaterCommands.AddToComment"/>
+                <MenuItem Command="Commands:ResxTranslaterCommands.FindSource"/>
+                <MenuItem Command="Commands:ResxTranslaterCommands.FindTarget"/>
+            </MenuItem>
+            <MenuItem Header="オプション(_O)">
+                <MenuItem Name="menuUnTranslatedOnly" Header="未翻訳のみリストに表示する(_U)" IsCheckable="True" Click="UnTranslatedOnly_Click"/>
+            </MenuItem>
+            <!--<MenuItem Header="ヘルプ(_H)">
+                <MenuItem Header="バージョン情報(_V)" Click="VersionInfo_Click"></MenuItem>
+            </MenuItem>-->
+        </Menu>
+
+
+        <ListView Grid.Column="0" Grid.Row="1" Margin="5" Name="contentList" SelectionChanged="contentList_SelectionChanged" SelectionMode="Single" >
+            <ListView.Resources>
+                <Style x:Key="horizontalLeftStyle" TargetType="GridViewColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                    <Setter Property="Padding" Value="5, 0, 5, 0" />
+                </Style>
+            </ListView.Resources>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.View >
+                <GridView >
+                    <GridViewColumn Header="キー" Width="100" DisplayMemberBinding="{Binding Path=Name}" HeaderContainerStyle="{StaticResource horizontalLeftStyle}" />
+                    <GridViewColumn Header="翻訳済" Width="50" >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Center">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource translatedValueConverter}">
+                                            <Binding Path="SourceValue" />
+                                            <Binding Path="TargetValue" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="コメント" DisplayMemberBinding="{Binding Path=Comment, Converter={StaticResource noWrapTextConverter}}" HeaderContainerStyle="{StaticResource horizontalLeftStyle}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <GridSplitter ResizeDirection="Columns" Width="5" Grid.Row="1" Style="{StaticResource MouseOverHighlight}"  />
+
+        <Grid Grid.Column="1" Grid.Row="1" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="3*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="70"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,10,5,5" HorizontalAlignment="Right">キー</TextBlock>
+            <TextBlock Name="txtKey"  Grid.Column="1" Grid.Row="0" Margin="5,10,5,5" TextWrapping="NoWrap" ></TextBlock>
+
+            <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,5,5,5" HorizontalAlignment="Right">元テキスト</TextBlock>
+            <TextBox Name="txtSource"  Grid.Column="1" Grid.Row="1" Margin="0,5,5,5" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" TextWrapping="WrapWithOverflow" IsReadOnly="True"></TextBox>
+
+            <Button Grid.Column="1" Grid.Row="2" Margin="5,5,10,5" Name="btnTranslate" Click="Translate_Click">
+                ↑の元テキストをMicrosoft Translatorで翻訳して↓に入れる
+            </Button>
+
+            <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,5,5,5" HorizontalAlignment="Right">翻訳テキスト</TextBlock>
+            <TextBox Name="txtTarget" Grid.Column="1" Grid.Row="3" Margin="0,5,5,5" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" AcceptsReturn="True" TextWrapping="WrapWithOverflow"></TextBox>
+
+            <TextBlock Grid.Column="0" Grid.Row="4" Margin="5,5,5,5" HorizontalAlignment="Right">コメント</TextBlock>
+            <TextBox Name="txtComment" Grid.Column="1" Grid.Row="4" Margin="0,5,5,5" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" AcceptsReturn="True" TextWrapping="WrapWithOverflow"></TextBox>
+        </Grid>
+
+        <Grid Grid.ColumnSpan="2" Grid.Row="2" Height="30">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="6*" />
+                <ColumnDefinition Width="20" />
+            </Grid.ColumnDefinitions>
+
+            <StatusBar Grid.ColumnSpan="2" Grid.Row="2" Height="30" Background="Transparent">
+                <TextBlock Name="stbCounter" Foreground="Black" Text="データ数：- 件" Height="20" Margin="5,0,5,0" VerticalAlignment="Center" Grid.Column="0" />
+            </StatusBar>
+
+            <ProgressBar Height="20" HorizontalAlignment="Right" Name="progressBar" VerticalAlignment="Center" Width="250" Margin="5,0,5,0" Grid.Column="1" IsIndeterminate="False"/>
+        </Grid>
+
+    </Grid>
+
+</Window>
